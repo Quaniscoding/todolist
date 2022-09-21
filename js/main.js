@@ -9,11 +9,16 @@ let loadData = () => {
     }
 }
 let dshd = new ListActivity(loadData())
+let loadDataNew = () => {
+    if (localStorage.getItem("listActivityNew")) {
+        return JSON.parse(localStorage.getItem("listActivityNew"));
+    }
+}
+let dshdNew = new ListActivity(loadDataNew())
 getEle("addItem").onclick = () => {
     let activityItem = getEle("newTask").value;
     let activityId = Math.floor(Math.random() * 100);
     let newActivity = new Activity(activityItem, activityId);
-    console.log(newActivity.activityId);
     dshd.addActivity(newActivity)
     saveData(dshd.listActivity);
     showActivity(dshd.listActivity);
@@ -23,7 +28,7 @@ let showActivity = (getActivityList) => {
     if (getActivityList) {
         getActivityList.map(item => {
             res += `
-                <li>${item.activityItem}
+                <li id="task">${item.activityItem}
                 <button id="btnDelete" class="fa fa-trash-can" onclick="deleteActivity(${item.activityId})"></button>
                 <button id="btnCheck"class="fa fa-check"onclick="checkActivity(${item.activityId})"></button>
                 </li>`
@@ -38,8 +43,8 @@ let showCompleteActivity = (getActivityList) => {
         getActivityList.map(item => {
             res += `
                 <li>${item.activityItem}
-                <button id="btnDelete" class="fa fa-trash-can" onclick="deleteActivity(${item.activityId})"></button>
-                <button id="btnCheck"class="fa fa-check"onclick="checkActivity(${item.activityId})"></button>
+                <button id="btnDelete" class="fa fa-trash-can" onclick="deleteActivityDone(${item.activityId})"></button>
+                <button id="btnCheckDone"class="fa fa-check"onclick="checkActivity(${item.activityId})"></button>
                 </li>`
         })
 
@@ -50,23 +55,32 @@ let showCompleteActivity = (getActivityList) => {
 let saveData = (data) => {
     localStorage.setItem("listActivity", JSON.stringify(data));
 }
+let saveDataNew = (data) => {
+    localStorage.setItem("listActivityNew", JSON.stringify(data));
+}
 window.deleteActivity = (activityId) => {
     dshd.deleteActivity(activityId);
     saveData(dshd.listActivity);
     showActivity(dshd.listActivity);
 }
-let doneTask = []
+window.deleteActivityDone = (activityId) => {
+    dshdNew.deleteActivity(activityId);
+    saveDataNew(dshdNew.listActivity);
+    showCompleteActivity(dshdNew.listActivity);
+}
 window.checkActivity = (activityId) => {
     let activityItem = getEle("newTask").value;
-    let activityId1 = Math.floor(Math.random() * 100);
-    let newActivity = new Activity(activityItem, activityId1);
-    doneTask = dshd.listActivity;
-    console.log(doneTask);
-    doneTask.push(newActivity)
-    showCompleteActivity(doneTask)
+    let activityIdNew = Math.floor(Math.random() * 100);
+    let newActivity = new Activity(activityItem, activityIdNew);
+    dshd.deleteActivity(activityId)
+    dshdNew.addActivity(newActivity)
+    showCompleteActivity(dshdNew.listActivity)
+    saveDataNew(dshdNew.listActivity)
+    saveData(dshd.listActivity)
 }
 getEle("one").onclick = () => {
-
+    getEle("todo").style.display = "none";
+    getEle("completed").disabled = false;
 }
 
 getEle("two").onclick = () => {
@@ -99,5 +113,7 @@ getEle("three").onclick = () => {
 }
 getEle("all").onclick = () => {
     showActivity(dshd.listActivity)
+    showCompleteActivity(dshdNew.listActivity)
 }
 window.onload = showActivity(dshd.listActivity);
+window.onload = showCompleteActivity(dshdNew.listActivity);

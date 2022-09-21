@@ -335,3 +335,6 @@ li button{
 .card__add input#idTask{
   width: 30%;
 }
+#completed .fa-check{
+  color: green;
+}
