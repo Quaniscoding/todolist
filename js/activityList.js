@@ -10,8 +10,9 @@ class ListActivity {
             this.listActivity = [activity]
         }
     }
-    deleteActivity(activity) {
-        let activityIndex = this.listActivity.filter(item => item.activityId != activity)
+    deleteActivity(activityId) {
+        let activityIndex = this.listActivity.findIndex(item => item.activityId == activityId)
+        console.log(activityIndex);
         this.listActivity.splice(activityIndex, 1)
     }
 }
